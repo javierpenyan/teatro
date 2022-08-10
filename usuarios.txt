@@ -1,0 +1,13 @@
+Actores:
+Correos:
+- j@gmail.com
+- a@gmail.com
+- m@gmail.com
+
+Compañias:
+Correos:
+- a@gmail.com
+- b@gmail.com
+- d@gmail.com
+
+LAS CONTRASEÑAS EN TODOS LOS CASOS, POR FACILITAR EL USO DE LA APLICACIÓN Y PUDIENDO SER CAMBIADAS SI SE DESEA SON: Aa123456

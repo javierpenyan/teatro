@@ -1,0 +1,222 @@
+<?php
+    session_start();
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../estilos/estilo.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="../asset/imagenes/logo.jpg">
+    <script src="./js/app_modalMap.js" defer></script>
+    <title>Document</title>
+</head>
+<body>
+
+<?php
+
+    //En caso de que esté guardada la sesión la obtengo
+
+
+if (isset($_COOKIE['mantener'])) {
+    session_decode($_COOKIE['mantener']);
+}
+
+
+
+ //introduzco el header y la cabecera dependiendo del tipo de usuario
+
+echo "<main>";
+
+echo '<div class="img-header12">
+<div class="welcome">
+  <h1>Bienvenidos TodoTeatro</h1>
+  <hr>
+  <p>Especializada en gestión de eventos de teatro</p>
+  <p>entre actores y compañías</p>
+</div>       
+</div>
+    ';
+
+echo "<section>";
+
+
+// echo"<main>";
+
+// echo'<div id="into">
+// <div id="intro-title">
+// <h1>Bienvenidos TodoTeatro</h1>
+// <hr>
+// <p>Especializada en gestión de eventos de teatro</p>
+// <p>entre actores y compañías</p>
+// </div>
+// <div id="intro-background">
+//     <iframe src="./asset/imagenes/video.mp4?autoplay=1" title="vimeo" allow="autoplay"></iframe>
+// </div>
+// </div>';
+
+
+
+
+    // echo"<section>";
+
+    require_once('./funciones.php');
+
+
+    if(isset($_SESSION['tipo'])){
+
+        if($_SESSION['tipo'] == 'compañia'){
+
+            $parametro1="./";
+            $parametro2="./";
+            echo insertar_menu_compañias($parametro1, $parametro2);
+
+        }elseif($_SESSION['tipo'] == 'actor'){
+
+            $parametro1="./";
+            $parametro2="./";
+            echo insertar_menu_actores($parametro1, $parametro2);
+
+        }
+
+        }else{
+
+            $parametro1="./";
+            $parametro2="../";
+            echo insertar_menu($parametro1, $parametro2);
+
+    }
+    echo'<h2 class="display-5 fw-bold" style="color: #FD9815; text-align: center; margin-bottom: 40px; margin-top:80px ">Regístrese como compañía</h2>';
+
+$conexion = conexion();
+    echo'
+    <form action="#" method="post" enctype="multipart/form-data">
+        <label for="nombre">Nombre</label>
+            <input type="text" name="nombre" id="nombre">
+        <label for="direccion">Dirección</label>
+            <input type="text" name="direccion" id="direccion">
+        <label for="creacion">Fecha de creación</label>
+            <input type="date" name="creacion" id="creacion">
+        <label for="tel">Número de teléfono</label>
+            <input type="text" name="tel" id="tel">
+        <label for="correo">Correo Electrónico</label>
+            <input type="text" name="correo" id="correo">
+        <label for="pass">Contraseña mínimo 6  caracteres, minúscula, mayúscula y número</label>
+            <input type="password" name="pass" id="pass">
+        <label for="foto">Fotografía formato png o jpg</label>
+            <input type="file" name="foto" id="foto">
+        <input type="submit" name="registrarme" value="registrarme" value="registrarme">
+    </form>';
+
+    if(isset($_POST['registrarme'])){
+
+        //obtener el siguiente id:
+
+        $sentencia = "SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'teatro' AND   TABLE_NAME = 'compañia';";
+        
+        $consulta=$conexion->query($sentencia);
+        $fila=$consulta->fetch_array(MYSQLI_ASSOC);
+
+
+
+        $siguiente_id = $fila['AUTO_INCREMENT'];
+        $nombre = $_POST['nombre'];
+        $direccion = $_POST['direccion'];
+        $creacion = $_POST['creacion'];
+        $tel = $_POST['tel'];
+        $correo = $_POST['correo'];
+        $pass = $_POST['pass'];
+
+        $compruebo="";
+
+        $n = $_FILES['foto']['name'];
+        $tipo = $_FILES['foto']['type'];
+        $tmp = $_FILES['foto']['tmp_name'];
+        $ruta = "../asset/imagenes";
+        $var="";
+        $reg="/asset/imagenes";
+        $error_foto = true;
+
+        if(!file_exists($ruta)){
+            mkdir($ruta);
+        }
+
+        if(strrpos($tipo, "jpeg")!==false || strrpos($tipo, "png")!==false || strrpos($tipo, "jpg")!==false){
+
+            // echo"entra1<br>";
+
+            if(strrpos($tipo, "jpeg")!==false || strrpos($tipo, "jpg")!==false){
+                $extension="jpeg";
+                $var=$ruta."/".$nombre."_".$siguiente_id.".jpg";
+                $reg=$reg."/".$nombre."_".$siguiente_id.".jpg";
+
+                // echo"$var --- $reg ---<br>";
+
+                // echo"entra2<br>";
+
+            }else{
+                $extension="png";
+                $var=$ruta."/".$nombre."_".$siguiente_id.".png";
+                $reg=$reg."/".$nombre."_".$siguiente_id.".png";
+
+                // echo"$var --- $reg ---<br>";
+
+                // echo"entra3<br>";
+            }
+            // echo "var -> $var<br>";
+            // echo "temp -> $tmp<br>";
+
+            move_uploaded_file($tmp, $var);
+            $error_foto = false;
+        }
+
+        $compruebo = comprueba_registro_compañia($nombre, $direccion, $creacion, $tel, $correo, $pass);
+
+        // echo"$compruebo<br>";
+
+        if(!$error_foto && $compruebo == 0){
+            $pass = md5(md5($pass));
+            //aqui subo cliente
+            //introduzca mensaje de registrado correctamente logueese a continuación
+            //nos lleve a la página de logueo
+            // echo"entra<br>";
+
+            $sentencia = "insert into compañia (id, nombre, direccion, creacion, telefono, correo, contraseña, foto) values (?, ?, ?, ?, ?, ?, ?, ?)";
+        
+            $consulta = $conexion->prepare($sentencia);
+
+            $consulta->bind_param("isssssss", $siguiente_id, $nombre, $direccion, $creacion, $tel, $correo , $pass, $reg);//-------------------------------------------------------------
+
+            $consulta->execute();
+
+            // $consulta->fetch();
+
+            $consulta->close();
+            // Header("refresh:1;url=../index.php");
+            echo"<h2 class='error'>guardado correctamente</h2>"; 
+
+        }else{
+            echo"<h2 class='error'>$compruebo</h2>";
+            //recargue la página
+        }
+
+    }
+    echo "</secion></main>";
+
+    //inserto footer
+    
+    echo insertar_footer($parametro1, $parametro2);
+
+
+
+?>
+
+</body>
+</html>
